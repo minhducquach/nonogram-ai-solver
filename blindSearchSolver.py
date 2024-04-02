@@ -2,13 +2,14 @@ import numpy as np
 from copy import deepcopy
 from itertools import combinations
 
-class NonogramSolver:
+class NonogramBlindSearchSolver:
     def __init__(self, testcase):
         self.step_count = 0
         self.height = 0
         self.width = 0
         self.grid = None
         self.state_queue = []
+        self.state_stack = []
         self.row_constraints = []
         self.col_constraints = []
         self.possibleRowForms = []
@@ -120,7 +121,23 @@ class NonogramSolver:
                 return i
         return -1
 
-    def solveBFS(self):
+    def solveDFS(self):
+        state = [0] * self.height
+        # if self.isGoal(state):
+        #     return
+        self.state_stack.append(state)
+        while len(self.state_stack) != 0:
+            state = self.state_stack.pop()
+            if self.isGoal(state):
+                return
+            index = self.checkLeaf(state)
+            if index != -1:
+                for i in range(1,len(self.possibleRowForms[index])+1):
+                    child_state = deepcopy(state)
+                    child_state[index] += i
+                    self.state_stack.append(child_state)
+
+    def solve(self):
         state = [0] * self.height
         # if self.isGoal(state):
         #     return
@@ -137,5 +154,5 @@ class NonogramSolver:
                     self.state_queue.append(child_state)
   
 if __name__ == '__main__':
-    problem = NonogramSolver(testcase = './testcase.txt')
-    problem.solveBFS()
+    problem = NonogramBlindSearchSolver(testcase = './testcase.txt')
+    problem.solveDFS()
