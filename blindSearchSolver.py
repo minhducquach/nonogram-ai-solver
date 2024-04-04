@@ -155,4 +155,4 @@ class NonogramBlindSearchSolver:
   
 if __name__ == '__main__':
     problem = NonogramBlindSearchSolver(testcase = './testcase.txt')
-    problem.solveDFS()
+    problem.solve()
