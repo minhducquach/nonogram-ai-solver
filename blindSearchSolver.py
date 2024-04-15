@@ -7,6 +7,7 @@ class NonogramBlindSearchSolver:
         self.step_count = 0
         self.height = 0
         self.width = 0
+        self.goalFlag = 0
         self.grid = None
         self.state_queue = []
         self.state_stack = []
@@ -125,8 +126,10 @@ class NonogramBlindSearchSolver:
         state = [0] * self.height
         # if self.isGoal(state):
         #     return
-        self.state_stack.append(state)
-        while len(self.state_stack) != 0:
+        if self.step_count == 1:
+            self.state_stack.append(state)
+        # while len(self.state_stack) != 0:
+        if len(self.state_stack) != 0:
             state = self.state_stack.pop()
             if self.isGoal(state):
                 return
@@ -141,8 +144,10 @@ class NonogramBlindSearchSolver:
         state = [0] * self.height
         # if self.isGoal(state):
         #     return
-        self.state_queue.append(state)
-        while len(self.state_queue) != 0:
+        if self.step_count == 1:
+            self.state_queue.append(state)
+        # while len(self.state_queue) != 0:
+        if len(self.state_queue) != 0:
             state = self.state_queue.pop(0)
             if self.isGoal(state):
                 return

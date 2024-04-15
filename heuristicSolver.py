@@ -8,9 +8,9 @@ class NonogramAStarSolver:
         self.step_count = 0
         self.height = 0
         self.width = 0
+        self.goalFlag = 0
         self.grid = None
         self.state_queue = PriorityQueue()
-        self.state_stack = []
         self.row_constraints = []
         self.col_constraints = []
         self.possibleRowForms = []
@@ -150,10 +150,13 @@ class NonogramAStarSolver:
 
     def solve(self):
         state = [0] * self.height
-        self.state_queue.put((0, state))
-        while not self.state_queue.empty():
+        if self.step_count == 1:
+            self.state_queue.put((0, state))
+        # while not self.state_queue.empty():
+        if not self.state_queue.empty():
             _, state = self.state_queue.get()
             if self.isGoal(state):
+                self.goalFlag = 1
                 return
             index = self.checkLeaf(state)
             if index != -1:
