@@ -80,9 +80,12 @@ class NonogramApp:
         self.selected_model = self.model_selection.get()
         if self.selected_model == "Blind Search" and self.solver == None:
             self.solver = NonogramBlindSearchSolver(self.testcase)
+            self.blind_search_radio.configure(state = 'disabled')
+            self.a_star_radio.configure(state = 'disabled')
         elif self.selected_model == "A* Search" and self.solver == None:
             self.solver = NonogramAStarSolver(self.testcase)
-
+            self.blind_search_radio.configure(state = 'disabled')
+            self.a_star_radio.configure(state = 'disabled')
         self.is_solving = True
         self.solve_wrapper()
 
