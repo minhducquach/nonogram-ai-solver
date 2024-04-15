@@ -11,16 +11,20 @@ class NonogramApp:
         self.master.title("Nonogram Solver")
 
         self.selected_model = None
+        self.solver = None
         self.is_solving = False  # Flag to control the solving process
         self.should_stop = False  # Flag to indicate whether the solver should stop
+        self.step_solving = False
 
-        self.grid_size = 8
-        self.cell_size = 50
-
-        self.canvas = tk.Canvas(self.master, width=self.grid_size*self.cell_size, height=self.grid_size*self.cell_size)
-        self.canvas.pack()
+        self.height = 0
+        self.width = 0
+        self.cell_size = 75
 
         self.load_testcase()
+
+        self.canvas = tk.Canvas(self.master, width=self.width*self.cell_size, height=self.height*self.cell_size)
+        self.canvas.pack()
+
         self.draw_grid()
 
         self.play_button = tk.Button(self.master, text="Play", command=self.play)
@@ -43,11 +47,17 @@ class NonogramApp:
     def load_testcase(self):
         # Load your test case here
         self.testcase = './testcase.txt'
+        f = open(self.testcase, 'r')
+        for line in f:
+            line_items = line.split(" ")
+            self.height = int(line_items[0])
+            self.width = int(line_items[1])
+            break
 
     def draw_grid(self):
-        self.cells = [[None] * self.grid_size for _ in range(self.grid_size)]
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
+        self.cells = [[None] * self.width for _ in range(self.height)]
+        for i in range(self.height):
+            for j in range(self.width):
                 x0 = j * self.cell_size
                 y0 = i * self.cell_size
                 x1 = x0 + self.cell_size
@@ -55,8 +65,8 @@ class NonogramApp:
                 self.cells[i][j] = self.canvas.create_rectangle(x0, y0, x1, y1, outline="black", fill="white")
 
     def update_grid(self, grid):
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
+        for i in range(self.height):
+            for j in range(self.width):
                 cell_color = "black" if grid[i][j] == 1 else "white"
                 self.canvas.itemconfig(self.cells[i][j], fill=cell_color)
 
@@ -64,56 +74,76 @@ class NonogramApp:
         if self.is_solving:
             messagebox.showinfo("Info", "Solver is already running.")
             return
-
+        else:
+            self.is_solving = True
+            self.should_stop = False
         self.selected_model = self.model_selection.get()
-        if self.selected_model == "Blind Search":
+        if self.selected_model == "Blind Search" and self.solver == None:
             self.solver = NonogramBlindSearchSolver(self.testcase)
-        elif self.selected_model == "A* Search":
+        elif self.selected_model == "A* Search" and self.solver == None:
             self.solver = NonogramAStarSolver(self.testcase)
 
         self.is_solving = True
-        thread = threading.Thread(target=self.solve_wrapper)
-        thread.start()
+        self.solve_wrapper()
 
     def solve_wrapper(self):
-        if self.selected_model == "Blind Search":
-            self.solver.solveDFS()
-        elif self.selected_model == "A* Search":
-            self.solver.solve()
-        
-       
+        self.solver.solve()
         grid = self.solver.grid
-        
-       
         self.update_grid(grid)
         
+        if self.solver.goalFlag:
+            messagebox.showinfo("Info", "Goal state reached.")
+            self.should_stop = True
+            self.is_solving = False
+            self.self_solving = False
+
+            self.play_button["state"] = "disabled"
+            self.pause_button["state"] = "disabled"
+            self.step_button["state"] = "disabled"
+            return
         # Check if solving should continue
         if not self.should_stop:
-           
-            self.master.after(1000, self.solve_wrapper)
+            self.master.after(100, self.solve_wrapper)
 
     def pause(self):
         if not self.is_solving:
             messagebox.showinfo("Info", "Solver is not running.")
             return
         self.should_stop = True
-        messagebox.showinfo("Info", "Solver paused.")
+        self.is_solving = False
+        if not self.step_solving:
+            messagebox.showinfo("Info", "Solver paused.")
+        else:
+            self.step_solving = False
 
     def step_by_step(self):
-        if not self.selected_model:
-            messagebox.showinfo("Error", "Please select a model first.")
+        if self.is_solving:
+            messagebox.showinfo("Info", "Solver is already running.")
             return
-
-        if not self.is_solving:
+        else:
             self.is_solving = True
+            self.step_solving = True
+        self.selected_model = self.model_selection.get()
+        if self.selected_model == "Blind Search" and self.solver == None:
+            self.solver = NonogramBlindSearchSolver(self.testcase)
+        elif self.selected_model == "A* Search" and self.solver == None:
+            self.solver = NonogramAStarSolver(self.testcase)
 
-            if self.selected_model == "Blind Search":
-                self.solver.solveDFS()
-            elif self.selected_model == "A* Search":
-                self.solver.solve()
-
+        self.solver.solve()
+        grid = self.solver.grid
+        self.update_grid(grid)
+        
+        if self.solver.goalFlag:
+            messagebox.showinfo("Info", "Goal state reached.")
+            self.should_stop = True
             self.is_solving = False
-            self.update_grid(self.solver.grid)
+            self.self_solving = False
+
+            self.play_button["state"] = "disabled"
+            self.pause_button["state"] = "disabled"
+            self.step_button["state"] = "disabled"
+            return
+        self.pause()
 
 def main():
     root = tk.Tk()
