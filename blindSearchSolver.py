@@ -151,6 +151,7 @@ class NonogramBlindSearchSolver:
         if len(self.state_queue) != 0:
             state = self.state_queue.pop(0)
             if self.isGoal(state):
+                self.goalFlag = 1
                 return
             index = self.checkLeaf(state)
             if index != -1:
