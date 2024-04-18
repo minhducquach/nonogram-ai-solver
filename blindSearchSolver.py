@@ -4,6 +4,7 @@ from itertools import combinations
 import time
 import os
 import psutil
+
 class NonogramBlindSearchSolver:
     def __init__(self, testcase):
         self.step_count = 0
@@ -152,8 +153,13 @@ class NonogramBlindSearchSolver:
         #     return
         if self.step_count == 1:
             self.state_queue.append(state)
-        while len(self.state_queue) != 0:
-        #if len(self.state_queue) != 0:
+        #########
+        # comment when running main.py, uncomment when running solver.py
+        # while len(self.state_queue) != 0:
+        #########
+        # comment when running solver.py, uncomment when running main.py
+        if len(self.state_queue) != 0:
+        #########
             state = self.state_queue.pop(0)
             if self.isGoal(state):
                 self.goalFlag = 1

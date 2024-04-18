@@ -5,6 +5,7 @@ from queue import PriorityQueue
 import time
 import psutil
 import os
+
 class NonogramAStarSolver:
     def __init__(self, testcase):
         self.step_count = 0
@@ -89,7 +90,7 @@ class NonogramAStarSolver:
                 res_opt = np.array(res_opt, dtype=int)
                 res.append(res_opt)
             self.possibleColForms.append(res)
-        print("POS:", self.possibleColForms)
+        # print("POS:", self.possibleColForms)
 
     def printState(self, isGoalFlag = 0):
         if isGoalFlag != 1:
@@ -155,8 +156,13 @@ class NonogramAStarSolver:
         state = [0] * self.height
         if self.step_count == 1:
             self.state_queue.put((0, state))
+        #########
+        # comment when running main.py, uncomment when running solver.py
         # while not self.state_queue.empty():
+        #########
+        # comment when running solver.py, uncomment when running main.py
         if not self.state_queue.empty():
+        #########
             _, state = self.state_queue.get()
             if self.isGoal(state):
                 self.goalFlag = 1
@@ -196,5 +202,5 @@ if __name__ == '__main__':
     end_time=time.time()       
     mem_after = process_memory()
     execution_time = end_time - start_time
-    print(f"Execution Time: {execution_time}")
-    print(f"Memory used: {mem_after - mem_before}") 
+    print(f"Execution Time: {execution_time} seconds")
+    print(f"Memory used: {mem_after - mem_before} bytes") 
