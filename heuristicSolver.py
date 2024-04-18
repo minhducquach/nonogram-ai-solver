@@ -2,7 +2,9 @@ import numpy as np
 from copy import deepcopy
 from itertools import combinations
 from queue import PriorityQueue
-
+import time
+import psutil
+import os
 class NonogramAStarSolver:
     def __init__(self, testcase):
         self.step_count = 0
@@ -147,6 +149,7 @@ class NonogramAStarSolver:
             if val == 0:
                 return i
         return -1
+    
 
     def solve(self):
         state = [0] * self.height
@@ -180,6 +183,18 @@ class NonogramAStarSolver:
                     cost += 1
         return cost
     
+def process_memory():
+       process = psutil.Process(os.getpid())
+       mem_info = process.memory_info()
+       return mem_info.rss 
+    
 if __name__ == '__main__':
+    mem_before = process_memory()
+    start_time = time.time() 
     problem = NonogramAStarSolver(testcase = './testcase.txt')
     problem.solve()
+    end_time=time.time()       
+    mem_after = process_memory()
+    execution_time = end_time - start_time
+    print(f"Execution Time: {execution_time}")
+    print(f"Memory used: {mem_after - mem_before}") 
