@@ -106,7 +106,7 @@ class NonogramApp:
             return
         # Check if solving should continue
         if not self.should_stop:
-            self.master.after(100, self.solve_wrapper)
+            self.master.after(50, self.solve_wrapper)
 
     def pause(self):
         if not self.is_solving:

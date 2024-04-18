@@ -1,6 +1,9 @@
 import numpy as np
 from copy import deepcopy
 from itertools import combinations
+import time
+import os
+import psutil
 
 class NonogramBlindSearchSolver:
     def __init__(self, testcase):
@@ -140,15 +143,23 @@ class NonogramBlindSearchSolver:
                     child_state = deepcopy(state)
                     child_state[index] += i
                     self.state_stack.append(child_state)
-
+    
+    
+        
     def solve(self):
+        #start_time = time.time()
         state = [0] * self.height
         # if self.isGoal(state):
         #     return
         if self.step_count == 1:
             self.state_queue.append(state)
+        #########
+        # comment when running main.py, uncomment when running solver.py
         # while len(self.state_queue) != 0:
+        #########
+        # comment when running solver.py, uncomment when running main.py
         if len(self.state_queue) != 0:
+        #########
             state = self.state_queue.pop(0)
             if self.isGoal(state):
                 self.goalFlag = 1
@@ -159,7 +170,20 @@ class NonogramBlindSearchSolver:
                     child_state = deepcopy(state)
                     child_state[index] += i
                     self.state_queue.append(child_state)
-  
+            
+
+def process_memory():
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+    return mem_info.rss 
+
 if __name__ == '__main__':
+    mem_before = process_memory()
+    start_time = time.time()
     problem = NonogramBlindSearchSolver(testcase = './testcase.txt')
     problem.solve()
+    end_time=time.time()       
+    mem_after = process_memory()
+    execution_time = end_time - start_time
+    print(f"Execution Time: {execution_time} seconds")
+    print(f"Memory used: {mem_after - mem_before} bytes") 
